@@ -77,7 +77,25 @@ namespace CurrencyConverterTask.Tests
             // Assert
             Assert.That(0.86 == exchangeRates["USD"]["EUR"]);
             Assert.That(1 / 0.86 == exchangeRates["EUR"]["USD"]);
-        }      
+        }
+
+        [Test]
+        public void ClearConfiguration_ShouldRemoveAllRates()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            _converter.ClearConfiguration();
+
+            // Assert
+            Assert.IsEmpty(_converter.GetExchangeRates());
+        }
     }
 }
 
