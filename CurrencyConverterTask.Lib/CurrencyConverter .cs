@@ -54,14 +54,24 @@ public class CurrencyConverter : ICurrencyConverter
         }
 
         // Perform BFS to find the shortest conversion path
-        var distTable = CreateDistanceTable(fromCurrency);
+        var trackingDictionary = CreateTrackingDictionary(fromCurrency, toCurrency);
 
-        if (distTable[toCurrency].dis == -1)
+        if (string.IsNullOrEmpty(trackingDictionary[toCurrency]))
             throw new ArgumentException("No conversion path found.");
 
-        List<string> path = FindShortestPath(fromCurrency, toCurrency, distTable);
+        List<string> path = FindShortestPath(fromCurrency, toCurrency, trackingDictionary);
 
         return CalculateCurrencyConversion(fromCurrency, amount, path);
+    }
+
+    public void ClearConfiguration()
+    {
+        exchangeRates.Clear();
+    }
+
+    public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()
+    {
+        return exchangeRates;
     }
 
     private double CalculateCurrencyConversion(string fromCurrency, double amount, List<string> path)
@@ -78,7 +88,8 @@ public class CurrencyConverter : ICurrencyConverter
         return nextAmount;
     }
 
-    private static List<string> FindShortestPath(string fromCurrency, string toCurrency, Dictionary<string, (string prev, int dis)> distTable)
+    private List<string> FindShortestPath(string fromCurrency, string toCurrency,
+        Dictionary<string, string> distTable)
     {
         var path = new List<string>();
         string node = toCurrency;
@@ -86,25 +97,23 @@ public class CurrencyConverter : ICurrencyConverter
         while (node != fromCurrency && distTable.ContainsKey(node))
         {
             path.Add(node);
-            node = distTable[node].prev;
+            node = distTable[node];
         }
 
         path.Reverse();
         return path;
     }
 
-    private Dictionary<string, (string prev, int dis)> CreateDistanceTable(string fromCurrency)
+    private Dictionary<string, string> CreateTrackingDictionary(string fromCurrency, string toCurrency)
     {
         var queue = new Queue<string>();
         var visited = new HashSet<string>();
-        var distTable = new Dictionary<string, (string prev, int dis)>();
+        var trackingDictionary = new Dictionary<string, string>();
 
         foreach (var item in exchangeRates)
         {
-            distTable.Add(item.Key, ("", -1));
+            trackingDictionary.Add(item.Key, "");
         }
-
-        distTable[fromCurrency] = ("", 0);
 
         queue.Enqueue(fromCurrency);
 
@@ -119,21 +128,14 @@ public class CurrencyConverter : ICurrencyConverter
                 if (!visited.Contains(nextCurrency))
                 {
                     queue.Enqueue(nextCurrency);
-                    distTable[nextCurrency] = (currentCurrency, distTable[currentCurrency].dis + 1);
+                    trackingDictionary[nextCurrency] = currentCurrency;
+
+                    if (nextCurrency == toCurrency)
+                        return trackingDictionary;
                 }
             }
         }
 
-        return distTable;
-    }
-
-    public void ClearConfiguration()
-    {
-        exchangeRates.Clear();
-    }
-
-    public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()
-    {
-        return exchangeRates;
+        return trackingDictionary;
     }
 }

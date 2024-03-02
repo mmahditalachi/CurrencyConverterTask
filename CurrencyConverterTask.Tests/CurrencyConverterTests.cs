@@ -154,7 +154,7 @@ namespace CurrencyConverterTask.Tests
         }
 
         [Test]
-        public void Convert_InvalidCurrency_ShouldThrowException()
+        public void Convert_InvalidToCurrency_ShouldThrowException()
         {
             // Arrange
             _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
@@ -166,6 +166,57 @@ namespace CurrencyConverterTask.Tests
 
             // Act and Assert
             Assert.Throws<ArgumentException>(() => _converter.Convert("USD", "JPY", 100));
+        }
+
+        [Test]
+        public void Convert_InvalidFromCurrency_ShouldThrowException()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => _converter.Convert("JPY", "USD", 100));
+        }
+
+        [Test]
+        public void Convert_CanNotConvert_ShouldArgumentException()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("GBP", "JPY", 190.01),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => _converter.Convert("USD", "JPY", 100));
+        }
+
+        [Test]
+        public void Convert_IndirectPath_ShouldFindShortestPath()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("USD", "GBP", 0.79),
+                Tuple.Create("CAD", "GBP", 5.2),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            var result = _converter.Convert("EUR", "GBP", 100);
+
+            // Assert
+            // Shortest Path: EUR=>USA=>GBP: 96.86
+            // Other Path: EUR=>USA=>CAD=>GBP: 8808.29
+            Assert.That(91.86 == Math.Round(result, 2));
         }
     }
 }
