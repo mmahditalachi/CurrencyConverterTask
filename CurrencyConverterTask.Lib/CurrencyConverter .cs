@@ -46,7 +46,7 @@ public class CurrencyConverter : ICurrencyConverter
 
     public void ClearConfiguration()
     {
-        throw new NotImplementedException();
+        exchangeRates.Clear();
     }
 
     public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()
