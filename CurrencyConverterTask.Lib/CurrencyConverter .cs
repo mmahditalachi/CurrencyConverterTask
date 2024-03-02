@@ -54,9 +54,51 @@ public class CurrencyConverter : ICurrencyConverter
         }
 
         // Perform BFS to find the shortest conversion path
+        var distTable = CreateDistanceTable(fromCurrency);
+
+        if (distTable[toCurrency].dis == -1)
+            throw new ArgumentException("No conversion path found.");
+
+        List<string> path = FindShortestPath(fromCurrency, toCurrency, distTable);
+
+        return CalculateCurrencyConversion(fromCurrency, amount, path);
+    }
+
+    private double CalculateCurrencyConversion(string fromCurrency, double amount, List<string> path)
+    {
+        double nextAmount = amount;
+        string from = fromCurrency;
+
+        foreach (var item in path)
+        {
+            nextAmount *= exchangeRates[from][item];
+            from = item;
+        }
+
+        return nextAmount;
+    }
+
+    private static List<string> FindShortestPath(string fromCurrency, string toCurrency, Dictionary<string, (string prev, int dis)> distTable)
+    {
+        var path = new List<string>();
+        string node = toCurrency;
+
+        while (node != fromCurrency && distTable.ContainsKey(node))
+        {
+            path.Add(node);
+            node = distTable[node].prev;
+        }
+
+        path.Reverse();
+        return path;
+    }
+
+    private Dictionary<string, (string prev, int dis)> CreateDistanceTable(string fromCurrency)
+    {
         var queue = new Queue<string>();
         var visited = new HashSet<string>();
         var distTable = new Dictionary<string, (string prev, int dis)>();
+
         foreach (var item in exchangeRates)
         {
             distTable.Add(item.Key, ("", -1));
@@ -82,30 +124,7 @@ public class CurrencyConverter : ICurrencyConverter
             }
         }
 
-        if (distTable[toCurrency].dis == -1)
-            throw new ArgumentException("No conversion path found.");
-
-        List<string> path = new List<string>();
-        string node = toCurrency;
-
-        while (node != fromCurrency && distTable.ContainsKey(node))
-        {
-            path.Add(node);
-            node = distTable[node].prev;
-        }
-
-        path.Reverse();
-        double nextAmount = amount;
-        string from = fromCurrency;
-        string to = toCurrency;
-
-        foreach (var item in path)
-        {
-            nextAmount = nextAmount * exchangeRates[from][item];
-            from = item;
-        }
-
-        return nextAmount;
+        return distTable;
     }
 
     public void ClearConfiguration()
