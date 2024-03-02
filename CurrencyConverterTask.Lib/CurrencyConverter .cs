@@ -17,9 +17,26 @@ public class CurrencyConverter : ICurrencyConverter
         exchangeRates = new Dictionary<string, Dictionary<string, double>>();
     }
 
-    public void ClearConfiguration()
+    public void UpdateConfiguration(IEnumerable<Tuple<string, string, double>> conversionRates)
     {
-        throw new NotImplementedException();
+        foreach (var rate in conversionRates)
+        {
+            var fromCurrency = rate.Item1;
+            var toCurrency = rate.Item2;
+            var rateValue = rate.Item3;
+
+            if (!exchangeRates.ContainsKey(fromCurrency))
+            {
+                exchangeRates[fromCurrency] = new Dictionary<string, double>();
+            }
+            exchangeRates[fromCurrency][toCurrency] = rateValue;
+
+            if (!exchangeRates.ContainsKey(toCurrency))
+            {
+                exchangeRates[toCurrency] = new Dictionary<string, double>();
+            }
+            exchangeRates[toCurrency][fromCurrency] = 1 / rateValue;
+        }
     }
 
     public double Convert(string fromCurrency, string toCurrency, double amount)
@@ -27,13 +44,13 @@ public class CurrencyConverter : ICurrencyConverter
         throw new NotImplementedException();
     }
 
-    public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()
+    public void ClearConfiguration()
     {
         throw new NotImplementedException();
     }
 
-    public void UpdateConfiguration(IEnumerable<Tuple<string, string, double>> conversionRates)
+    public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()
     {
-        throw new NotImplementedException();
+        return exchangeRates;
     }
 }
