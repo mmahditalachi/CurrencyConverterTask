@@ -96,6 +96,77 @@ namespace CurrencyConverterTask.Tests
             // Assert
             Assert.IsEmpty(_converter.GetExchangeRates());
         }
+
+
+
+        [Test]
+        public void Convert_SameCurrency_ShouldReturnSameAmount()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            var result = _converter.Convert("USD", "USD", 100);
+
+            // Assert
+            Assert.That(100 == result);
+        }
+
+        [Test]
+        public void Convert_DirectPath_ShouldReturnConvertedAmount()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            var result = _converter.Convert("USD", "EUR", 100);
+
+            // Assert
+            Assert.That(86 == Math.Round(result, 2));
+        }
+
+        [Test]
+        public void Convert_IndirectPath_ShouldReturnConvertedAmount()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            var result = _converter.Convert("CAD", "EUR", 100);
+
+            // Assert
+            Assert.That(64.18 == Math.Round(result, 2));
+        }
+
+        [Test]
+        public void Convert_InvalidCurrency_ShouldThrowException()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "CAD", 1.34),
+                Tuple.Create("CAD", "GBP", 0.58),
+                Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => _converter.Convert("USD", "JPY", 100));
+        }
     }
 }
 
