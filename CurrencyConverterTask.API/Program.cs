@@ -1,7 +1,6 @@
 using CurrencyConverterTask.Lib;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);

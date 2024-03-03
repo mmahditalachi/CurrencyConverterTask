@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace CurrencyConverterTask.Lib;
+﻿namespace CurrencyConverterTask.Lib;
 
 public class CurrencyConverter : ICurrencyConverter
 {
@@ -26,7 +18,7 @@ public class CurrencyConverter : ICurrencyConverter
             var toCurrency = rate.Item2;
             var rateValue = rate.Item3;
 
-            if(fromCurrency.ToLower() == toCurrency.ToLower())
+            if (fromCurrency.ToLower() == toCurrency.ToLower())
                 throw new ArgumentException("fromCurrency and toCurrency can not be euqal");
 
             if (!exchangeRates.ContainsKey(fromCurrency))

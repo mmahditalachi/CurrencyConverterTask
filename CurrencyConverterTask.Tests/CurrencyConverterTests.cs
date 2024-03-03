@@ -89,8 +89,8 @@ namespace CurrencyConverterTask.Tests
             };
 
             // Act and Assert
-            Assert.Throws<ArgumentException>(() => 
-            _converter.UpdateConfiguration(existingConversionRates));           
+            Assert.Throws<ArgumentException>(() =>
+            _converter.UpdateConfiguration(existingConversionRates));
         }
 
         [Test]
@@ -266,7 +266,7 @@ namespace CurrencyConverterTask.Tests
 
         [Test]
         public void Convert_WithoutUpdateConfigration_ShouldThrowException()
-        {           
+        {
             // Act and Assert            
             Assert.Throws<InvalidOperationException>(() => _converter.Convert("EUR", "GBP", 100));
         }
