@@ -11,6 +11,7 @@ namespace CurrencyConverterTask.Lib;
 public class CurrencyConverter : ICurrencyConverter
 {
     private readonly Dictionary<string, Dictionary<string, double>> exchangeRates;
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
     public CurrencyConverter()
     {
@@ -41,32 +42,49 @@ public class CurrencyConverter : ICurrencyConverter
 
     public double Convert(string fromCurrency, string toCurrency, double amount)
     {
-        if (fromCurrency == toCurrency)
+        _semaphore.Wait();
+        try
         {
-            return amount;
+            if (fromCurrency == toCurrency)
+            {
+                return amount;
+            }
+
+            var allNodes = exchangeRates.SelectMany(p => p.Value).ToList();
+
+            if (!allNodes.Any(e => e.Key == fromCurrency) || !allNodes.Any(e => e.Key == toCurrency))
+            {
+                throw new ArgumentException("Invalid currency codes.");
+            }
+
+            // Perform BFS to find the shortest conversion path
+            var trackingDictionary = CreateTrackingDictionary(fromCurrency, toCurrency);
+
+            if (string.IsNullOrEmpty(trackingDictionary[toCurrency]))
+                throw new ArgumentException("No conversion path found.");
+
+            List<string> path = FindShortestPath(fromCurrency, toCurrency, trackingDictionary);
+
+            var result = CalculateCurrencyConversion(fromCurrency, amount, path);
+            return result;
         }
-
-        var allNodes = exchangeRates.SelectMany(p => p.Value).ToList();
-
-        if (!allNodes.Any(e => e.Key == fromCurrency) || !allNodes.Any(e => e.Key == toCurrency))
+        finally
         {
-            throw new ArgumentException("Invalid currency codes.");
+            _semaphore.Release();
         }
-
-        // Perform BFS to find the shortest conversion path
-        var trackingDictionary = CreateTrackingDictionary(fromCurrency, toCurrency);
-
-        if (string.IsNullOrEmpty(trackingDictionary[toCurrency]))
-            throw new ArgumentException("No conversion path found.");
-
-        List<string> path = FindShortestPath(fromCurrency, toCurrency, trackingDictionary);
-
-        return CalculateCurrencyConversion(fromCurrency, amount, path);
     }
 
     public void ClearConfiguration()
     {
-        exchangeRates.Clear();
+        _semaphore.Wait();
+        try
+        {
+            exchangeRates.Clear();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     public IReadOnlyDictionary<string, Dictionary<string, double>> GetExchangeRates()

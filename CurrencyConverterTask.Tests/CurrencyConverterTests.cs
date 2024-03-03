@@ -218,6 +218,37 @@ namespace CurrencyConverterTask.Tests
             // Other Path: EUR=>USA=>CAD=>GBP: 8808.29
             Assert.That(91.86 == Math.Round(result, 2));
         }
+
+        [Test]
+        public async Task Convert_TwoThreadIndirectPath_ShouldReturnConvertedAmount()
+        {
+            // Arrange
+            _converter.UpdateConfiguration(new List<Tuple<string, string, double>>
+            {
+                    Tuple.Create("USD", "CAD", 1.34),
+                    Tuple.Create("CAD", "GBP", 0.58),
+                    Tuple.Create("USD", "EUR", 0.86)
+            });
+
+            // Act
+            var task1 = Task.Run(() =>
+            {
+
+                var result = _converter.Convert("CAD", "EUR", 100);
+
+                Assert.That(64.18 == Math.Round(result, 2));
+            });
+
+            var task2 = Task.Run(() =>
+            {
+                var result = _converter.Convert("USD", "GBP", 100);
+
+                // Assert
+                Assert.That(77.72 == Math.Round(result, 2));
+            });
+
+            await Task.WhenAll(task2);
+        }
     }
 }
 
