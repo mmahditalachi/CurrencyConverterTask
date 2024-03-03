@@ -80,6 +80,20 @@ namespace CurrencyConverterTask.Tests
         }
 
         [Test]
+        public void UpdateConfiguration_AddSameFromandToCurrency_ShouldThrowException()
+        {
+            // Arrange
+            var existingConversionRates = new List<Tuple<string, string, double>>
+            {
+                Tuple.Create("USD", "USD", 0.90)
+            };
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => 
+            _converter.UpdateConfiguration(existingConversionRates));           
+        }
+
+        [Test]
         public void ClearConfiguration_ShouldRemoveAllRates()
         {
             // Arrange
@@ -248,6 +262,13 @@ namespace CurrencyConverterTask.Tests
             });
 
             await Task.WhenAll(task2);
+        }
+
+        [Test]
+        public void Convert_WithoutUpdateConfigration_ShouldThrowException()
+        {           
+            // Act and Assert            
+            Assert.Throws<InvalidOperationException>(() => _converter.Convert("EUR", "GBP", 100));
         }
     }
 }

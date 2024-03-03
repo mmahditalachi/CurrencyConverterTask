@@ -26,6 +26,9 @@ public class CurrencyConverter : ICurrencyConverter
             var toCurrency = rate.Item2;
             var rateValue = rate.Item3;
 
+            if(fromCurrency.ToLower() == toCurrency.ToLower())
+                throw new ArgumentException("fromCurrency and toCurrency can not be euqal");
+
             if (!exchangeRates.ContainsKey(fromCurrency))
             {
                 exchangeRates[fromCurrency] = new Dictionary<string, double>();
@@ -45,6 +48,9 @@ public class CurrencyConverter : ICurrencyConverter
         _semaphore.Wait();
         try
         {
+            if (!exchangeRates.Any())
+                throw new InvalidOperationException("currency configuration does not set");
+
             if (fromCurrency == toCurrency)
             {
                 return amount;

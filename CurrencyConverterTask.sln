@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyConverterTask.Lib", "CurrencyConverterTask.Lib\CurrencyConverterTask.Lib.csproj", "{24EE4C96-A9E6-49B8-B36B-806785E83E39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurrencyConverterTask.Lib", "CurrencyConverterTask.Lib\CurrencyConverterTask.Lib.csproj", "{24EE4C96-A9E6-49B8-B36B-806785E83E39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyConverterTask.Tests", "CurrencyConverterTask.Tests\CurrencyConverterTask.Tests.csproj", "{D1B2211C-69CA-46C9-B599-F571FE2F28DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurrencyConverterTask.Tests", "CurrencyConverterTask.Tests\CurrencyConverterTask.Tests.csproj", "{D1B2211C-69CA-46C9-B599-F571FE2F28DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyConverterTask.API", "CurrencyConverterTask.API\CurrencyConverterTask.API.csproj", "{12168C8D-A2FF-4E41-9DAA-20805CCCD657}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D1B2211C-69CA-46C9-B599-F571FE2F28DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1B2211C-69CA-46C9-B599-F571FE2F28DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1B2211C-69CA-46C9-B599-F571FE2F28DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12168C8D-A2FF-4E41-9DAA-20805CCCD657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12168C8D-A2FF-4E41-9DAA-20805CCCD657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12168C8D-A2FF-4E41-9DAA-20805CCCD657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12168C8D-A2FF-4E41-9DAA-20805CCCD657}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
